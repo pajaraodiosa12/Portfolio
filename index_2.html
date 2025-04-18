@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrusel Animado</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #000;
+      font-family: sans-serif;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .carousel {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: auto;
+      overflow: visible;
+      padding: 30px 10px;
+      box-sizing: border-box;
+    }
+    .carousel-track {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      transition: transform 0.6s ease-in-out;
+      overflow: visible;
+    }
+    .slide {
+      position: relative;
+      flex: 0 0 calc(80vw);
+      max-width: 270px;
+      height: calc(80vw * 16 / 9);
+      max-height: 480px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: box-shadow 0.3s ease-in-out, border 0.3s ease-in-out;
+      z-index: 0;
+    }
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      transition: transform 0.6s ease-in-out, filter 0.6s ease-in-out;
+      position: relative;
+      z-index: 1;
+    }
+    .slide:not(.active) img {
+      transform: scale(0.8);
+      filter: blur(4px) brightness(60%);
+    }
+    .slide.active img {
+      transform: scale(1);
+      filter: blur(0) brightness(100%);
+    }
+    .slide.active:hover {
+      box-shadow: 0 0 0 4px white, 0 0 15px rgba(255, 255, 255, 0.6);
+      border-radius: 10px;
+      z-index: 4;
+    }
+    .caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+      border-radius: 0 0 10px 10px;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: bold;
+      text-align: left;
+      margin: 0;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+      z-index: 2;
+    }
+    .slide.active:hover .caption {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .carousel:hover .slide:not(.active) img {
+      filter: blur(6px) brightness(40%);
+    }
+
+    @media (max-width: 768px) {
+      .slide {
+        flex: 0 0 90vw;
+        height: calc(90vw * 16 / 9);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .carousel {
+        padding: 30px 0;
+      }
+      .slide {
+        flex: 0 0 100vw;
+        height: calc(100vw * 16 / 9);
+      }
+      .caption {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="carousel">
+    <ul class="carousel-track">
+      <li class="slide">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/61/Gif-animado-.gif" alt="Título 1">
+        <p class="caption">Título 1</p>
+      </li>
+      <li class="slide">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Motion_Animated.gif" alt="Título 2">
+        <p class="caption">Título 2</p>
+      </li>
+      <li class="slide">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/67/Animation_for_US1663261_with_72_Frames.gif" alt="Título 3">
+        <p class="caption">Título 3</p>
+      </li>
+      <li class="slide">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Stereo_wiggle_3D.gif" alt="Título 4">
+        <p class="caption">Título 4</p>
+      </li>
+      <li class="slide">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Neptunian_Trojans.gif" alt="Título 5">
+        <p class="caption">Título 5</p>
+      </li>
+      <li class="slide">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Globespin.gif" alt="Título 6">
+        <p class="caption">Título 6</p>
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    const track = document.querySelector('.carousel-track');
+    const slides = track.children;
+    let slideWidth = slides[0].offsetWidth;
+    let currentIndex = 1;
+    let isHovered = false;
+
+    const firstSlide = slides[0];
+    const secondSlide = slides[1];
+    const lastSlide = slides[slides.length - 1];
+
+    const cloneLast = lastSlide.cloneNode(true);
+    const cloneFirst = firstSlide.cloneNode(true);
+    const cloneSecond = secondSlide.cloneNode(true);
+
+    track.prepend(cloneLast);
+    track.append(cloneFirst);
+    track.append(cloneSecond);
+
+    const updatedSlides = track.children;
+    updatedSlides[currentIndex].classList.add('active');
+
+    function nextSlide() {
+      if (isHovered) return;
+      slideWidth = slides[0].offsetWidth;
+      updatedSlides[currentIndex].classList.remove('active');
+      currentIndex++;
+      updatedSlides[currentIndex].classList.add('active');
+      track.style.transform = `translateX(${(1 - currentIndex) * slideWidth}px)`;
+    }
+
+    const intervalTime = 1500;
+    let slideInterval = setInterval(nextSlide, intervalTime);
+
+    track.addEventListener('mouseenter', () => isHovered = true);
+    track.addEventListener('mouseleave', () => isHovered = false);
+
+    track.addEventListener('transitionend', () => {
+      if (currentIndex === updatedSlides.length - 2) {
+        track.style.transition = 'none';
+        updatedSlides[currentIndex].classList.remove('active');
+        currentIndex = 1;
+        updatedSlides[currentIndex].classList.add('active');
+        track.style.transform = `translateX(0px)`;
+        track.offsetHeight;
+        track.style.transition = 'transform 0.6s ease-in-out';
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      slideWidth = slides[0].offsetWidth;
+      track.style.transform = `translateX(${(1 - currentIndex) * slideWidth}px)`;
+    });
+  </script>
+</body>
+</html>
